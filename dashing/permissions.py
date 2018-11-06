@@ -2,38 +2,45 @@
 
 
 class BasePermission(object):
-    """
+	"""
     A base class from which all permission classes should inherit.
     """
 
-    def has_permission(self, request):
-        """
+	def has_permission(self, request):
+		"""
         Return `True` if permission is granted, `False` otherwise.
         """
-        return True
+		return True
 
 
 class AllowAny(BasePermission):
-    """
+	"""
     Allow any access.
     """
-    def has_permission(self, request):
-        return True
+
+	def has_permission(self, request):
+		return True
 
 
 class IsAuthenticated(BasePermission):
-    """
+	"""
     Allows access only to authenticated users.
     """
 
-    def has_permission(self, request):
-        return request.user and request.user.is_authenticated()
+	def has_permission(self, request):
+		if request.user:
+			try:
+				is_authenticated = request.user.is_authenticated()
+			except TypeError:
+				is_authenticated = request.user.is_authenticated
+
+		return request.user and is_authenticated
 
 
 class IsAdminUser(BasePermission):
-    """
+	"""
     Allows access only to admin users.
     """
 
-    def has_permission(self, request):
-        return request.user and request.user.is_staff
+	def has_permission(self, request):
+		return request.user and request.user.is_staff
